@@ -1,0 +1,9 @@
+assets
+build
+configuration
+node_modules
+test
+webpack
+.gitignore
+index.html
+webpack.config.js
