@@ -1,7 +1,6 @@
 import { camelCase } from 'lodash';
 import * as store from './store';
 import { prepareObject } from '../utils/prepare';
-import { make as makeCanvas, unmake as unmakeCanvas } from '../webgl/canvases';
 import { make as makeRenderer, unmake as unmakeRenderer } from '../webgl/renderers';
 import { make as makeScene, unmake as unmakeScene } from '../webgl/scenes';
 import { make as makeBehavior, unmake as unmakeBehavior } from '../sauce/behaviors';
@@ -19,14 +18,6 @@ const canvases = {};
 
 function getCanvas(name) {
   return canvases[name];
-}
-
-function initializeCanvasConfigs(initializer) {
-  canvases[initializer.name] = makeCanvas(store.get(initializer.name, 'canvas'));
-}
-
-function unloadCanvasConfigs(initializer) {
-  delete canvases[initializer.name];
 }
 
 /////////////////////
@@ -265,5 +256,5 @@ export {
   initializeBehaviorConfigs, unloadBehaviorConfigs, getBehavior, setBehaviors,
   initializeSourceConfigs, unloadSourceConfigs, getSource,
   initializeCompositionConfigs, unloadCompositionConfigs, getComposition,
-  initializeCanvasConfigs, unloadCanvasConfigs, getCanvas
+  getCanvas
 }

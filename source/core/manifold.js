@@ -5,8 +5,7 @@ import {
   initializeSceneConfigs, unloadSceneConfigs,
   initializeBehaviorConfigs, unloadBehaviorConfigs,
   initializeSourceConfigs, unloadSourceConfigs,
-  initializeCompositionConfigs, unloadCompositionConfigs,
-  initializeCanvasConfigs, unloadCanvasConfigs
+  initializeCompositionConfigs, unloadCompositionConfigs
 } from './initializers'
 import * as environment from './environment';
 import * as events from '../events';
@@ -198,8 +197,6 @@ function loadProgram(name, configuration, options={}, el) {
   initializeSourceConfigs(initializer.register('sources'));
   initializeBehaviorConfigs(initializer.register('behaviors'));
 
-  initializeCanvasConfigs(initializer);
-
   initializeRendererConfigs(initializer.register('renderers'));
   initializeSceneConfigs(initializer.register('scenes'));
 
@@ -247,7 +244,6 @@ function unloadProgram(name, options={}) {
   unloadCompositionConfigs(initializer, 'frame_buffer');
   unloadSceneConfigs(initializer);
   unloadRendererConfigs(initializer);
-  unloadCanvasConfigs(initializer);
 
   environment.unload(initializer);
   store.unload(initializer);
