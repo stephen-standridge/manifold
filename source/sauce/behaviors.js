@@ -12,13 +12,13 @@ import { Map } from 'immutable'
 import * as store from '../core/store';
 
 
-class Behavior {
+export class Behavior {
 	constructor(core, name) {
 		this.core = core.get('aspects');
 		this.name = name;
 		this.registrations = {};
 	}
-	activate(){
+	activate() {
 
 		this.core = this.core.map((aspectConfig, aspectName, initializer) => {
 			//iterates over each aspect within the given file
@@ -34,7 +34,7 @@ class Behavior {
 			let setters = aspectSetters.toJS();
 			let aspect = this[aspectName];
 			let data = aspectName == type ? this[type] : aspect[type];
-			if (!aspect){ console.warn(`could not find ${this.name}:${this.type}`); return }
+			if (!aspect) { console.warn(`could not find ${this.name}:${this.type}`); return }
 			if (!data || !data.values) return;
 
 			Object.keys(data.values).forEach((dataName) => {
@@ -55,19 +55,19 @@ class Behavior {
 		this[aspectName] = this[aspectName] || {};
 		this[aspectName]['source'] = this[aspectName]['source'] || {};
 
-	  setProperties(this, aspectConfig, this.makeBehaviorAssigner('properties', aspectName));
-	  initializeAttributes(this, aspectConfig, this.makeBehaviorAssigner('attributes', aspectName));
+		setProperties(this, aspectConfig, this.makeBehaviorAssigner('properties', aspectName));
+		initializeAttributes(this, aspectConfig, this.makeBehaviorAssigner('attributes', aspectName));
 
-	  let attributesSource = getSource(aspectConfig.get('source'), 'attributes');
-	  this.makeBehaviorAssigner('source', aspectName)(attributesSource, 'attributes');
-	  attributesSource && setAction(this, `relink_attributes_source`, () => { attributesSource.relink() })
+		let attributesSource = getSource(aspectConfig.get('source'), 'attributes');
+		this.makeBehaviorAssigner('source', aspectName)(attributesSource, 'attributes');
+		attributesSource && setAction(this, `relink_attributes_source`, () => { attributesSource.relink() })
 
 		setTextures(this, aspectConfig, initializer, this.makeBehaviorAssigner('uniforms', aspectName));
 		initializeUniforms(this, aspectConfig, this.makeBehaviorAssigner('uniforms', aspectName));
 
-	  let uniformsSource = getSource(aspectConfig.get('source'), 'uniforms');
-	  this.makeBehaviorAssigner('source', aspectName)(uniformsSource, 'uniforms');
-	  uniformsSource && setAction(this, `relink_uniforms_source`, () => { uniformsSource.relink() })
+		let uniformsSource = getSource(aspectConfig.get('source'), 'uniforms');
+		this.makeBehaviorAssigner('source', aspectName)(uniformsSource, 'uniforms');
+		uniformsSource && setAction(this, `relink_uniforms_source`, () => { uniformsSource.relink() })
 	}
 	makeBehaviorAssigner(type, aspectName) {
 		return (thing, thingName) => {
@@ -87,7 +87,7 @@ class Behavior {
 	}
 }
 
-function make(config, name, initializer){
+function make(config, name, initializer) {
 	let onFinished = initializer.register(`behaviors_${name}`);
 	//iterates over all behavior files, initializing them
 	let createdBehavior = new Behavior(config, name);
@@ -95,8 +95,8 @@ function make(config, name, initializer){
 
 	setProperties(createdBehavior, config);
 	let actions = initializeActions(createdBehavior, config);
-  let cycles = initializeCycles(createdBehavior, config);
-  let subscription = initializeSubscriptions(createdBehavior, config, initializer);
+	let cycles = initializeCycles(createdBehavior, config);
+	let subscription = initializeSubscriptions(createdBehavior, config, initializer);
 
 	createdBehavior.actions.initialize && createdBehavior.actions.initialize()
 	onFinished.finished({ subscription, cycles, actions });
@@ -106,7 +106,7 @@ function make(config, name, initializer){
 function unmake(behavior) {
 	unloadActions(behavior);
 	unloadCycles(behavior);
-  unloadSubscriptions(behavior);
+	unloadSubscriptions(behavior);
 	delete behavior.core;
 	delete behavior.registrations;
 }

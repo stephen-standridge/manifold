@@ -21,26 +21,26 @@ state.controllers = {};
 state.programConfigs = Map({});
 state.systems = {};
 
-function logLoad(){
+function logLoad() {
 }
-function logError(err){
+function logError(err) {
   console.error(err)
 }
-function logProgress(){
+function logProgress() {
 }
 
 const queuePause = new RX.Subject();
 const queueSubject = new RX.Subject();
 const finishedSubject = new RX.Subject();
 const actionStream = queueSubject.pausableBuffered(queuePause)
-    .subscribe(enqueued => {
-      enqueued.action.apply(null, enqueued.args)
-    });
+  .subscribe(enqueued => {
+    enqueued.action.apply(null, enqueued.args)
+  });
 
-function initializeManifold(options={}, env={}, el) {
+function initializeManifold(options = {}, env = {}, el) {
   el = el && ((el.length && el[0]) || el) ||
-      document.querySelectorAll('.manifold') && document.querySelectorAll('.manifold')[0] ||
-      document.body
+    document.querySelectorAll('.manifold') && document.querySelectorAll('.manifold')[0] ||
+    document.body
 
   queuePause.onNext(false)
   if (state['manifold']) {
@@ -54,7 +54,7 @@ function initializeManifold(options={}, env={}, el) {
     total: 0,
     el: el,
     finishedSubscription: finishedSubject.debounce(1000).filter(t => t == 'manifold').subscribe(start),
-    onInitialize: options.onInitialize || function(){}
+    onInitialize: options.onInitialize || function () { }
   };
 
   let onProgress = options.onProgress || logProgress;
@@ -87,7 +87,7 @@ function onFinish(type, options, controller, system) {
   return;
 }
 
-function onRegister(type, options, newType, system){
+function onRegister(type, options, newType, system) {
   if (!newType) {
     console.warn(`cannot register child of ${type.join(', ')}`);
     return;
@@ -108,7 +108,7 @@ function setController(type, controller) {
   state.controllers[program] = state.controllers[program] || {};
   state.controllers[program][name[0]] = state.controllers[program][name[0]] || {};
   let existingController = state.controllers[program][name[0]][name[1]];
-  if(existingController) {
+  if (existingController) {
     state.controllers[program][name[0]][name[1]] = [].concat(existingController, controller)
   } else {
     state.controllers[program][name[0]][name[1]] = controller
@@ -131,7 +131,7 @@ function createController(type, controller) {
   })
 
   hasController = Object.keys(newController).length > 0;
-  return  hasController && newController
+  return hasController && newController
 }
 
 
@@ -139,18 +139,18 @@ function createController(type, controller) {
 //* program functions *//
 /////////////////////////
 
-function initializeProgram(type, options={}) {
+function initializeProgram(type, options = {}) {
 
   let types = [].concat(type);
   let { onLoad, onProgress, onError } = options;
   state[types[0]].total++;
   let register = onRegister.bind(_, types, options);
   let finished = onFinish.bind(_, types, options);
-  let locateFile = options.locateFile || function(url){
-    return url && process.env.ASSET_HOST+url;
+  let locateFile = options.locateFile || function (url) {
+    return url && process.env.ASSET_HOST + url;
   };
-  let locateSource = options.locateSource || function(url){
-    return url && process.env.SOURCE_HOST+url;
+  let locateSource = options.locateSource || function (url) {
+    return url && process.env.SOURCE_HOST + url;
   };
 
   let el = options.el || state['manifold'].el || document.body;
@@ -168,7 +168,7 @@ function initializeProgram(type, options={}) {
   };
 }
 
-function loadProgram(name, configuration, options={}, el) {
+function loadProgram(name, configuration, options = {}, el) {
   el = el && ((el.length && el[0]) || el)
   queuePause.onNext(false)
   if (state[name]) {
@@ -182,11 +182,11 @@ function loadProgram(name, configuration, options={}, el) {
     total: 0,
     el: el,
     finishedSubscription: finishedSubject.debounce(1000).filter(t => t == name).subscribe(start),
-    onInitialize: options.onInitialize || function(){}
+    onInitialize: options.onInitialize || function () { }
   };
   const initializer = initializeProgram(name, Object.assign({ el }, options));
 
-  if(!initializer) {
+  if (!initializer) {
     queuePause.onNext(true)
     return;
   }
@@ -208,7 +208,7 @@ function loadProgram(name, configuration, options={}, el) {
   initializer.finished();
 }
 
-function unloadProgram(name, options={}) {
+function unloadProgram(name, options = {}) {
   queuePause.onNext(false)
   if (!state[name]) {
     console.warn(`cannot unload ${name}, it is not loaded`);
@@ -217,15 +217,15 @@ function unloadProgram(name, options={}) {
   }
 
   stopProgram(name);
-  state[name].toStart.forEach((toStart)=> {
+  state[name].toStart.forEach((toStart) => {
     let subscription = toStart.subscription;
-    subscription && Object.keys(subscription.list).forEach((s)=> subscription.list[s].dispose());
+    subscription && Object.keys(subscription.list).forEach((s) => subscription.list[s].dispose());
   });
-  Object.keys(state.controllers[name]).forEach(k =>{
+  Object.keys(state.controllers[name]).forEach(k => {
     let controllers = state.controllers[name][k];
     Object.keys(controllers).forEach(c => {
       let subscription = controllers[c].subscription;
-      subscription && Object.keys(subscription.list).forEach(s =>{
+      subscription && Object.keys(subscription.list).forEach(s => {
         subscription.list[s].dispose();
         delete subscription.list[s];
       })
@@ -281,12 +281,14 @@ function setSystem(type, config) {
 }
 
 function getStatus() {
-  return Object.keys(state.programs).reduce((sum, program)=> {
-    return Object.assign(sum, { [program]: {
-      toStart: state[program].toStart,
-      loaded: state[program].loaded,
-      total: state[program].total
-    } })
+  return Object.keys(state.programs).reduce((sum, program) => {
+    return Object.assign(sum, {
+      [program]: {
+        toStart: state[program].toStart,
+        loaded: state[program].loaded,
+        total: state[program].total
+      }
+    })
   }, {})
 }
 
